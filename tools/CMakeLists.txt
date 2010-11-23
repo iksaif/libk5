@@ -1,0 +1,5 @@
+add_subdirectory(krb5-test)
+add_subdirectory(kinit)
+add_subdirectory(kvno)
+add_subdirectory(kdestroy)
+add_subdirectory(klist)
