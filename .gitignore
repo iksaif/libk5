@@ -9,3 +9,5 @@ res/.directory
 \#*#
 Makefile
 Trolltech.conf
+doc/html
+doc/man

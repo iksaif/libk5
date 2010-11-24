@@ -25,6 +25,12 @@
 
 #include "k5.h"
 
+struct _k5_context {
+  krb5_context ctx;
+  krb5_ccache cc;
+  int verbose;
+};
+
 #include <krb5/krb5.h>
 #include <gssapi/gssapi.h>
 

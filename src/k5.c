@@ -97,13 +97,15 @@ k5_parse_ticket_etypes(k5_ticket *ticket)
 
     enctype = ticket->creds->keyblock.enctype;
 
-    if ((code = krb5_enctype_to_string(enctype, ticket->key_enc, sizeof(ticket->key_enc)))) {
+    if ((code = krb5_enctype_to_string(enctype, ticket->key_enc,
+				       sizeof(ticket->key_enc)))) {
 	sprintf(ticket->key_enc, "etype %d", enctype);
     }
 
     enctype = ticket->ticket->enc_part.enctype;
 
-    if ((code = krb5_enctype_to_string(enctype, ticket->ticket_enc, sizeof(ticket->ticket_enc)))) {
+    if ((code = krb5_enctype_to_string(enctype, ticket->ticket_enc,
+				       sizeof(ticket->ticket_enc)))) {
 	sprintf(ticket->ticket_enc, "etype %d", enctype);
     }
 
@@ -146,15 +148,22 @@ k5_parse_ticket(k5_context k5, krb5_creds *creds,
 
   k5_parse_ticket_flags(t);
   k5_parse_ticket_etypes(t);
-  
+
   krb5_free_unparsed_name(k5->ctx, name);
   krb5_free_unparsed_name(k5->ctx, sname);
   return 0;
 }
 
-
+/**
+ * @fn krb5_error_code k5_init_context(k5_context *k5p, const char *cache)
+ * @brief Initialize k5_context
+ * @param k5p libk5 context
+ * @param cache optional cache, set to NULL to use default
+ * @return 0 on success; otherwise returns an error code
+ * @sa k5_free_context
+ */
 krb5_error_code K5_EXPORT
-k5_init_context(k5_context *k5p, const char *cachename)
+k5_init_context(k5_context *k5p, const char *cache)
 {
   krb5_error_code code = 0;
   k5_context k5;
@@ -174,9 +183,9 @@ k5_init_context(k5_context *k5p, const char *cachename)
   if (code)
     goto cleanup;
 
-  if (cachename) {
-    if ((code = krb5_cc_resolve(k5->ctx, cachename, &k5->cc))) {
-      com_err("k5_init_context", code, "resolving ccache %s", cachename);
+  if (cache) {
+    if ((code = krb5_cc_resolve(k5->ctx, cache, &k5->cc))) {
+      com_err("k5_init_context", code, "resolving ccache %s", cache);
       goto cleanup;
     }
   } else {
@@ -675,16 +684,6 @@ k5_kdestroy(k5_context k5)
 }
 
 krb5_error_code K5_EXPORT
-k5_free_ticket(k5_context k5, k5_ticket *ticket)
-{
-  krb5_error_code code;
-
-  code = k5_clear_ticket(k5, ticket);
-  free(ticket);
-  return code;
-}
-
-krb5_error_code K5_EXPORT
 k5_clear_ticket(k5_context k5, k5_ticket *ticket)
 {
   assert(k5);
@@ -703,18 +702,6 @@ k5_clear_ticket(k5_context k5, k5_ticket *ticket)
   krb5_free_ticket(k5->ctx, ticket->ticket);
 
   memset(ticket, 0, sizeof (*ticket));
-  return 0;
-}
-
-krb5_error_code K5_EXPORT
-k5_free_klist(k5_context k5, k5_klist_entries *klist)
-{
-  assert(k5);
-  assert(k5->ctx);
-  assert(k5->cc);
-
-  k5_clear_klist(k5, klist);
-  free(klist);
   return 0;
 }
 
