@@ -24,6 +24,18 @@ find_package (Krb5 REQUIRED)
 add_subdirectory (src)
 add_subdirectory (tools)
 
+if(WIN32)
+  install(FILES
+          "${KRB5_KFW_PATH}/bin/comerr32.dll"
+	  "${KRB5_KFW_PATH}/bin/k5sprt32.dll"
+	  "${KRB5_KFW_PATH}/bin/krb5_32.dll"
+	  "${KRB5_KFW_PATH}/bin/gssapi32.dll"
+	  "${KRB5_KFW_PATH}/bin/wshelp32.dll"
+	  COMPONENT tools
+          DESTINATION bin
+  )
+endif (WIN32)
+
 # CPack
 set(CPACK_VERSION_MAJOR ${K5_LIB_MAJOR_VERSION})
 set(CPACK_VERSION_MINOR ${K5_LIB_MINOR_VERSION})
