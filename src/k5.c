@@ -133,8 +133,8 @@ k5_parse_ticket(k5_context k5, krb5_creds *creds,
 
   memset(t, 0, sizeof (*t));
 
-  t->client_name = name;
-  t->server_name = sname;
+  t->client_name = strdup(name);
+  t->server_name = strdup(sname);
   t->data = creds->ticket.data;
   t->data_size = creds->ticket.length;
   t->authtime = creds->times.authtime;
@@ -146,6 +146,9 @@ k5_parse_ticket(k5_context k5, krb5_creds *creds,
 
   k5_parse_ticket_flags(t);
   k5_parse_ticket_etypes(t);
+  
+  krb5_free_unparsed_name(k5->ctx, name);
+  krb5_free_unparsed_name(k5->ctx, sname);
   return 0;
 }
 
