@@ -16,6 +16,13 @@
 
 #include <k5.h>
 
+#if defined(_WIN32)
+#include <com_err.h>
+extern et_old_error_hook_func set_com_err_hook (et_old_error_hook_func);
+#else
+#include <et/com_err.h>
+#endif
+
 enum action {
   INTERACTIVE = 1,
   LIST,
@@ -269,7 +276,7 @@ static int mslsa(struct opt *opt)
   fprintf(stderr, "[-] Failed to import MSLSA, checking registry\n");
 
   if (!k5_mslsa_check_registry()) {
-    fprintf(stderr, "[-] Unknown failure, exiting\n");
+    fprintf(stderr, "[-] Unknown failure, exiting. Check that you're really connected to your AD\n");
     return -1;
   }
 
@@ -285,7 +292,7 @@ static int mslsa(struct opt *opt)
   fprintf(stderr, "[ ] Re-Trying to import tokens from MSLSA cache\n");
 
   if (k5_ms2mit(opt->k5)) {
-    fprintf(stderr, "[-] Failed two times to import MSLSA, exiting");
+    fprintf(stderr, "[-] Failed two times to import MSLSA, exiting\n");
     return -1;
   }
 
@@ -391,18 +398,29 @@ static void interactive(struct opt *opt)
   check_tgt(opt);
 }
 
+static void
+hook(const char *whoami, long code,
+     const char *format, va_list args)
+{
+  fprintf(stderr, "[-] %s: %s ", whoami, error_message(code));
+  vfprintf(stderr, format, args);
+  fprintf(stderr, "\n");
+}
+
 int main(int argc, char *argv[])
 {
   struct opt opt;
-
   memset(&opt, 0, sizeof(opt));
   parse_args(argc, argv, &opt);
   check_opts(&opt);
 
+  set_com_err_hook(hook);
   if (k5_init_context(&opt.k5, opt.cache)) {
     fprintf(stderr, "failed to initilize kerberos\n");
     return -1;
   }
+
+  k5_set_verbose(opt.k5, 1);
 
   if (opt.action == INTERACTIVE)
     interactive(&opt);
