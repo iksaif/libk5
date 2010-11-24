@@ -49,9 +49,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <gssapi.h>
 
-#include "k5.h"
 #include "k5_priv.h"
 
 static void
@@ -152,7 +150,7 @@ k5_parse_ticket(k5_context k5, krb5_creds *creds,
 }
 
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_init_context(k5_context *k5p, const char *cachename)
 {
   krb5_error_code code = 0;
@@ -210,7 +208,7 @@ k5_free_context(k5_context k5)
   return 0;
 }
 
-void
+void K5_EXPORT
 k5_set_verbose(k5_context k5, int enabled)
 {
   assert(k5);
@@ -219,7 +217,7 @@ k5_set_verbose(k5_context k5, int enabled)
 }
 
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_kinit(k5_context k5, k5_kinit_req *req, k5_ticket *k5_ticket)
 {
   krb5_error_code code = 0;
@@ -338,7 +336,7 @@ k5_kinit(k5_context k5, k5_kinit_req *req, k5_ticket *k5_ticket)
     goto cleanup;
 
   if ((code = krb5_copy_creds(k5->ctx, &creds, &ccreds))) {
-    com_err("k5_klist", code, "while copying credentials");
+    com_err("k5_kinit", code, "while copying credentials");
     goto cleanup;
   }
 
@@ -367,13 +365,13 @@ k5_kinit(k5_context k5, k5_kinit_req *req, k5_ticket *k5_ticket)
   return code;
 }
 
-#if defined(WIN32)
+#if defined(_WIN32)
 static gss_OID_desc gss_c_nt_hostbased_service =
     { 10, (void *) "\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04" };
 #define GSS_C_NT_HOSTBASED_SERVICE &gss_c_nt_hostbased_service
 #endif
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_get_service_ticket_gss(k5_context k5, const char *service,
 			  const char *hostname,
 			  k5_ticket *ticket)
@@ -466,7 +464,7 @@ k5_get_service_ticket_gss(k5_context k5, const char *service,
    return code;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_get_service_ticket(k5_context k5, const char *service,
 		      const char *hostname,
 		      k5_ticket *k5_ticket)
@@ -549,12 +547,12 @@ k5_get_service_ticket(k5_context k5, const char *service,
   return code;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_klist(k5_context k5, k5_klist_entries *rep)
 {
   krb5_cc_cursor cur;
   krb5_creds creds;
-  krb5_principal princ;
+  krb5_principal princ = NULL;
   krb5_flags flags;
   krb5_error_code code;
   char *defname = NULL;
@@ -650,7 +648,7 @@ k5_klist(k5_context k5, k5_klist_entries *rep)
   return code;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_kdestroy(k5_context k5)
 {
   krb5_error_code code;
@@ -673,7 +671,7 @@ k5_kdestroy(k5_context k5)
   return code;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_free_ticket(k5_context k5, k5_ticket *ticket)
 {
   krb5_error_code code;
@@ -683,7 +681,7 @@ k5_free_ticket(k5_context k5, k5_ticket *ticket)
   return code;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_clear_ticket(k5_context k5, k5_ticket *ticket)
 {
   assert(k5);
@@ -705,7 +703,7 @@ k5_clear_ticket(k5_context k5, k5_ticket *ticket)
   return 0;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_free_klist(k5_context k5, k5_klist_entries *klist)
 {
   assert(k5);
@@ -717,7 +715,7 @@ k5_free_klist(k5_context k5, k5_klist_entries *klist)
   return 0;
 }
 
-krb5_error_code
+krb5_error_code K5_EXPORT
 k5_clear_klist(k5_context k5, k5_klist_entries *klist)
 {
   int i;

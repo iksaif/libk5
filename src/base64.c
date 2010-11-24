@@ -25,7 +25,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "k5.h"
+#include "k5_priv.h"
 
 static const char cb64[]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 

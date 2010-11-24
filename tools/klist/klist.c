@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     printf(" server: %s\n client: %s\n", ticket->server_name, ticket->client_name);
     printf(" key: %s\n ticket: %s\n", ticket->key_enc, ticket->ticket_enc);
     printf(" flags: %s\n", ticket->flags);
-    printf(" data: %zd bytes\n", ticket->data_size);
+    printf(" data: %d bytes\n", (int)ticket->data_size);
     printf(" auth: %s", ctime(&ticket->authtime));
     printf(" start: %s", ctime(&ticket->starttime));
     printf(" end: %s", ctime(&ticket->endtime));

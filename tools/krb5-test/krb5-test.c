@@ -3,11 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <netdb.h>
 #include <errno.h>
+#include <ctype.h>
+#if defined(_WIN32)
+#include <winsock.h>
+#else
+#include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 #include <k5.h>
 
@@ -174,7 +179,7 @@ static void list(struct opt *opt)
     printf(" server: %s\n client: %s\n", ticket->server_name, ticket->client_name);
     printf(" key: %s\n ticket: %s\n", ticket->key_enc, ticket->ticket_enc);
     printf(" flags: %s\n", ticket->flags);
-    printf(" data: %zd bytes\n", ticket->data_size);
+    printf(" data: %d bytes\n", (int)ticket->data_size);
     printf(" auth: %s", ctime(&ticket->authtime));
     printf(" start: %s", ctime(&ticket->starttime));
     printf(" end: %s", ctime(&ticket->endtime));
@@ -297,14 +302,14 @@ static void mslsa(struct opt *opt)
 static void check_dns(const char *service)
 {
   struct hostent *hp = gethostbyname(service);
+  unsigned int i = 0;
 
   fprintf(stderr, "[ ] Checking DNS for %s\n", service);
 
   if (hp == NULL) {
-    fprintf(stderr, "[-] gethostbyname() failed: %s\n", strerror(errno));
+    fprintf(stderr, "[-] gethostbyname() failed\n");
   } else {
     fprintf(stderr, "[ ] %s = ", hp->h_name);
-    unsigned int i=0;
     while ( hp -> h_addr_list[i] != NULL) {
       fprintf(stderr, "%s ", inet_ntoa( *( struct in_addr*)( hp -> h_addr_list[i])));
       i++;
@@ -371,7 +376,7 @@ static void interactive(struct opt *opt)
   }
 
 #ifdef WIN32
-  if (!mslsa()) {
+  if (!mslsa(opt)) {
     fprintf(stderr, "[ ] Re-Trying to get a service ticket\n");
 
     if (!service(opt)) {

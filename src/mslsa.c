@@ -20,19 +20,22 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "k5.h"
+#include "k5_priv.h"
 
-int k5_mslsa_check_registry()
+int K5_EXPORT
+k5_mslsa_check_registry()
 {
   return 0;
 }
 
-int k5_mslsa_set_registry(int enable)
+int K5_EXPORT
+k5_mslsa_set_registry(int enable)
 {
   return 0;
 }
 
-krb5_error_code k5_ms2mit()
+krb5_error_code
+K5_EXPORT k5_ms2mit(k5_context k5)
 {
   return 0;
 }

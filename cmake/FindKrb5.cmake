@@ -126,31 +126,42 @@ if (UNIX)
 ENDIF(UNIX)
 
 IF(WIN32)
-  find_path (KRB5_INCLUDE_DIRS
-    NAMES krb5.h
-    PATHS
-    "C:\\Program Files\\MIT\\Kerberos\\inc\\krb5"
-    ${KRB5_INCLUDE_DIR}
-    ${INCLUDE_INSTALL_DIR}
-  )
+	FIND_PATH(KRB5_INCLUDE_DIRS
+			NAMES krb5.h
+			PATHS
+			${KRB5_KFW_PATH}\\inc\\krb5
+			"C:\\Program Files\\MIT\\Kerberos\\inc\\krb5\\"
+	)
+	
+	IF (KRB5_INCLUDE_DIRS)
+	    SET(KRB5_FOUND 1)
+	ENDIF()
+	
+	FOREACH (name comerr32 wshelp32 gssapi32 krb5_32)
+		FIND_LIBRARY(KRB5_${name}_LIBRARY
+			NAMES ${name}
+			PATHS
+			#"${KRB5_KFW_PATH}\\bin\\"
+			"${KRB5_KFW_PATH}\\lib\\i386\\"
+			#"C:\\Program Files\\MIT\\Kerberos\\bin\\"
+			"C:\\Program Files\\MIT\\Kerberos\\lib\\i386\\"
+			${KRB5_LIBRARY_DIRS}
+         )
+		FIND_LIBRARY(KRB5_${name}_LIBRARY NAMES ${name})
+		MARK_AS_ADVANCED(KRB5_${name}_LIBRARY)
 
-  find_library (KRB5_LIBRARIES
-    NAMES krb5_32
-    "C:\\Program Files\\MIT\\Kerberos\\lib\\i386"
-    ${KRB5_LIBRARIES_DIR}
-    ${LIBRARIES_INSTALL_DIR}
-  )
+		# If any library is not found then the whole package is not found.
+		IF(NOT KRB5_${name}_LIBRARY)
+			SET(KRB5_FOUND 0)
+		ENDIF(NOT KRB5_${name}_LIBRARY)
 
-  if (KRB5_INCLUDE_DIRS AND KRB5_LIBRARIES)
-    set(KRB5_LIBRARIES ${KRB5_LIBRARIES} com_err)
-    set(KRB5_FOUND 1)
-  endif()
+		# Build an ordered list of all the libraries needed.
+		SET(KRB5_LIBRARIES ${KRB5_LIBRARIES} "${KRB5_${name}_LIBRARY}")
+      ENDFOREACH(name)
 
-  if (KRB5_INCLUDE_DIRS AND NOT KRB5_LIBRARIES)
-    if ("${KRB5_FIND_COMPONENTS}" MATCHES "krb5")
-      set(KRB5_LIBRARIES ${KRB5_LIBRARIES} comerr32)
-    endif ()
-  endif()
+	#set(KRB5_INCLUDE_DIRS "${KRB5_KFW_PATH}\\inc\\krb5")
+	#set(KRB5_LIBRARIES "-L${KRB5_KFW_PATH}\\bin\\" "-L${KFW_INSTALL_PATH}\\lib\\i386\\")
+    #set(KRB5_LIBRARIES ${KRB5_LIBRARIES} "" "comerr32" wshelp32 gssapi32 krb5_32)
 ENDIF(WIN32)
 
 # Report the results.

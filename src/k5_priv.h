@@ -25,6 +25,9 @@
 
 #include "k5.h"
 
+#include <krb5/krb5.h>
+#include <gssapi/gssapi.h>
+
 int k5_b64enc_ticket(k5_ticket *ticket);
 
 #endif /* K5_PRIV_H_ */
