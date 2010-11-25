@@ -89,27 +89,22 @@ k5_parse_ticket_flags(k5_ticket *ticket)
     ticket->flags[i] = '\0';
 }
 
-static krb5_error_code
+static void
 k5_parse_ticket_etypes(k5_ticket *ticket)
 {
-    krb5_error_code code;
     krb5_enctype enctype;
 
     enctype = ticket->creds->keyblock.enctype;
 
-    if ((code = krb5_enctype_to_string(enctype, ticket->key_enc,
-				       sizeof(ticket->key_enc)))) {
-	sprintf(ticket->key_enc, "etype %d", enctype);
-    }
+    if (krb5_enctype_to_string(enctype, ticket->key_enc,
+			       sizeof(ticket->key_enc)))
+      sprintf(ticket->key_enc, "etype %d", enctype);
 
     enctype = ticket->ticket->enc_part.enctype;
 
-    if ((code = krb5_enctype_to_string(enctype, ticket->ticket_enc,
-				       sizeof(ticket->ticket_enc)))) {
-	sprintf(ticket->ticket_enc, "etype %d", enctype);
-    }
-
-    return code;
+    if (krb5_enctype_to_string(enctype, ticket->ticket_enc,
+			       sizeof(ticket->ticket_enc)))
+      sprintf(ticket->ticket_enc, "etype %d", enctype);
 }
 
 static krb5_error_code
@@ -238,6 +233,9 @@ k5_kinit(k5_context k5, k5_kinit_req *req, k5_ticket *k5_ticket)
   krb5_get_init_creds_opt *options = NULL;
   krb5_principal me = NULL;
   char* name = NULL;
+
+  /* Client creds.client field */
+  memset(&creds, 0, sizeof(creds));
 
   assert(k5);
 
