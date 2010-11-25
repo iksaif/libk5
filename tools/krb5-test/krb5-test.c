@@ -54,8 +54,8 @@ static void usage()
 	  "-m, --mslsa           import mslsa cache\n"
 	  "\n"
 	  "-p, --principal       principal ([service/]host@REALM)\n"
-	  "-h, --host            host\n"
-	  "-n, --service-name    service name\n"
+	  "-H, --host            host\n"
+	  "-S, --service-name    service name\n"
 	  "-c, --cache           cache name\n");
   exit(1);
 }
