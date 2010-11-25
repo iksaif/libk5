@@ -476,10 +476,9 @@ k5_get_service_ticket_gss(k5_context k5, const char *service,
    return code;
 }
 
-krb5_error_code K5_EXPORT
-k5_get_service_ticket(k5_context k5, const char *service,
-		      const char *hostname,
-		      k5_ticket *k5_ticket)
+static krb5_error_code
+k5_get_service_ticket_internal(k5_context k5, const char *service,
+		      const char *hostname, k5_ticket *k5_ticket)
 {
   krb5_error_code code = 0;
   krb5_principal me;
@@ -515,6 +514,7 @@ k5_get_service_ticket(k5_context k5, const char *service,
   }
 
   code = krb5_unparse_name(k5->ctx, in_creds.server, &princ);
+
   if (code) {
     com_err("k5_get_service_ticket", code,
 	    "while formatting parsed principal name for '%s'",
@@ -556,6 +556,68 @@ k5_get_service_ticket(k5_context k5, const char *service,
   if (me)
     krb5_free_principal(k5->ctx, me);
 
+  return code;
+}
+
+krb5_error_code K5_EXPORT
+k5_get_service_ticket(k5_context k5, const char *service,
+		      const char *hostname,
+		      k5_ticket *k5_ticket)
+{
+  krb5_error_code code;
+  krb5_principal me = NULL;
+  char *sname = NULL;
+  size_t len;
+
+  assert(k5);
+  assert(hostname);
+
+  /* First, try like the used asked us */
+  code = k5_get_service_ticket_internal(k5, service, hostname, k5_ticket);
+  if (!code)
+    return code;
+
+  /*
+   * if it fails, try to append default principal's realm
+   * this is really a hack, but seems to be needed on some
+   * (misconfigured ?) AD
+   */
+
+   /*
+   * only hostname was specified, use know what he is doing,
+   * don't try to append realm
+   */
+  if (!service)
+    return code;
+
+  code = krb5_cc_get_principal(k5->ctx, k5->cc, &me);
+  if (code) {
+    com_err("k5_get_service_ticket", code, "while getting client principal name");
+    return code;
+  }
+
+  /* Check that we can really try to append the realm */
+  if (!krb5_princ_realm(k5->ctx, me)->length)
+    return code;
+  len = strlen(service) + strlen("/") + strlen(hostname) + strlen("@") +
+        krb5_princ_realm(k5->ctx, me)->length + 1;
+  sname = malloc(len);
+  if (!sname)
+    goto cleanup;
+
+  memset(sname, 0, len);
+  strcpy(sname, service);
+  strcat(sname, "/");
+  strcat(sname, hostname);
+  strcat(sname, "@");
+  strncat(sname, krb5_princ_realm(k5->ctx, me)->data,
+          krb5_princ_realm(k5->ctx, me)->length);
+
+  code = k5_get_service_ticket_internal(k5, NULL, sname, k5_ticket);
+cleanup:
+  if (me)
+    krb5_free_principal(k5->ctx, me);
+  free(sname);
   return code;
 }
 
