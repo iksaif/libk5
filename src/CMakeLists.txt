@@ -1,7 +1,5 @@
 project(k5)
 
-option(K5_STATIC "build a static library [default: off]" OFF)
-
 add_library (k5 SHARED k5.c base64.c mslsa.c)
 target_link_libraries (k5 ${KRB5_LIBRARIES})
 include_directories (${KRB5_INCLUDE_DIRS})

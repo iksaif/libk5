@@ -16,11 +16,13 @@
 
 #include <k5.h>
 
-#if defined(_WIN32)
-#include <com_err.h>
-extern et_old_error_hook_func set_com_err_hook (et_old_error_hook_func);
-#else
+#if defined(__linux__)
 #include <et/com_err.h>
+#else
+#include <com_err.h>
+# if defined(_WIN32)
+extern et_old_error_hook_func set_com_err_hook (et_old_error_hook_func);
+# endif
 #endif
 
 enum action {
