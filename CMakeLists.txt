@@ -25,6 +25,7 @@ add_subdirectory (src)
 add_subdirectory (tools)
 
 if(WIN32)
+if(EXISTS "${KRB5_KFW_PATH}/bin")
   install(FILES
           "${KRB5_KFW_PATH}/bin/comerr32.dll"
 	  "${KRB5_KFW_PATH}/bin/k5sprt32.dll"
@@ -34,6 +35,7 @@ if(WIN32)
 	  COMPONENT tools
           DESTINATION bin
   )
+endif(EXISTS "${KRB5_KFW_PATH}/bin")
 endif (WIN32)
 
 # CPack
