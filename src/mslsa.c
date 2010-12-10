@@ -69,7 +69,7 @@ read_registry_key(const char *path, const char *key)
     RegCloseKey(hKey);
     return -1;
   }
-    
+
   RegCloseKey(hKey);
   return dwKeyEn;
 }
@@ -113,7 +113,7 @@ int K5_EXPORT
 k5_mslsa_check_registry()
 {
   int ret, k1 = 0, k2 = 0;
-  
+
   if ((ret = read_registry_key(MSLSA_PATH_1, MSLSA_KEY)) < 0) {
     fprintf(stderr, "%s: error while reading value of %s\\%s\n",
             "k5_mslsa_check_registry", MSLSA_PATH_1, MSLSA_KEY);
@@ -122,7 +122,7 @@ k5_mslsa_check_registry()
     fprintf(stderr, "%s\\%s = %x\n", MSLSA_PATH_1, MSLSA_KEY, ret);
     k1 = ret;
   }
-		
+
   if ((ret = read_registry_key(MSLSA_PATH_2, MSLSA_KEY)) < 0) {
     fprintf(stderr, "%s: error while reading value of %s\\%s\n",
             "k5_mslsa_check_registry", MSLSA_PATH_2, MSLSA_KEY);
@@ -151,7 +151,7 @@ K5_EXPORT k5_ms2mit(k5_context k5)
   krb5_creds creds;
   krb5_principal princ = NULL;
   int initial_ticket = 0;
-    
+
   if ((code = krb5_cc_resolve(k5->ctx, "MSLSA:", &mslsa_ccache))) {
     com_err("k5_ms2mit", code, "while opening MS LSA ccache");
     goto cleanup;
@@ -188,6 +188,7 @@ K5_EXPORT k5_ms2mit(k5_context k5)
     if (k5->verbose)
       fprintf(stderr, "%s: Initial Ticket Getting Tickets are not available from the MS LSA\n",
               "k5_ms2mit");
+    code = ENOENT;
     goto cleanup;
   }
 
