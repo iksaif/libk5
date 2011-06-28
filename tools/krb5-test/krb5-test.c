@@ -308,23 +308,77 @@ static void mslsa(struct opt *opt)
 }
 #endif
 
+static char *ip2str(const struct sockaddr *sa, char *s, size_t maxlen)
+{
+  memset(s, 0, maxlen);
+
+  switch(sa->sa_family) {
+  case AF_INET:
+    inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
+	      s, maxlen);
+    break;
+  case AF_INET6:
+    inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
+	      s, maxlen);
+    break;
+
+  default:
+    strncpy(s, "Unknown AF", maxlen);
+    return NULL;
+  }
+
+  return s;
+}
+
 static void check_dns(const char *service)
 {
-  struct hostent *hp = gethostbyname(service);
-  unsigned int i = 0;
+  struct addrinfo hints;
+  struct addrinfo *result, *rp;
+  char str[INET6_ADDRSTRLEN];
+  int ret;
 
-  fprintf(stderr, "[ ] Checking DNS for %s\n", service);
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+  hints.ai_socktype = 0;
+  hints.ai_flags = 0;
+  hints.ai_protocol = SOCK_STREAM; /* Set Protocol to avoid duplicates */
+  hints.ai_canonname = NULL;
+  hints.ai_addr = NULL;
+  hints.ai_next = NULL;
 
-  if (hp == NULL) {
-    fprintf(stderr, "[-] gethostbyname() failed\n");
-  } else {
-    fprintf(stderr, "[ ] %s = ", hp->h_name);
-    while ( hp -> h_addr_list[i] != NULL) {
-      fprintf(stderr, "%s ", inet_ntoa( *( struct in_addr*)( hp -> h_addr_list[i])));
-      i++;
-    }
-    fprintf(stderr, "\n");
+  ret = getaddrinfo(service, NULL, &hints, &result);
+  if (ret != 0) {
+    fprintf(stderr, "[-] getaddrinfo(%s): %s\n", service, gai_strerror(ret));
+    return ;
   }
+
+  fprintf(stderr, "[ ] getaddrinfo(%s) = ", service);
+
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    ip2str(rp->ai_addr, str, sizeof (str));
+    fprintf(stderr, "%s ", str);
+  }
+
+  fprintf(stderr, "\n");
+
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    char host[NI_MAXHOST], service[NI_MAXSERV];
+
+    ip2str(rp->ai_addr, str, sizeof (str));
+
+    ret = getnameinfo(rp->ai_addr, rp->ai_addrlen,
+		      host, NI_MAXHOST,
+		      service, NI_MAXSERV, NI_NUMERICSERV);
+
+    if (ret != 0) {
+      fprintf(stderr, "[-] getnameinfo(%s): %s\n", str, gai_strerror(ret));
+      continue ;
+    }
+
+    fprintf(stderr, "[ ] getnameinfo(%s): %s\n", str, host);
+  }
+
+  freeaddrinfo(result);
 }
 
 static void check_tgt(struct opt *opt)
