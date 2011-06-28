@@ -6,7 +6,8 @@
 #include <errno.h>
 #include <ctype.h>
 #if defined(_WIN32)
-#include <winsock.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
 #include <netdb.h>
 #include <sys/socket.h>
@@ -308,6 +309,27 @@ static void mslsa(struct opt *opt)
 }
 #endif
 
+#ifdef _MSC_VER
+static char *ip2str(const struct sockaddr *sa, char *s, size_t maxlen)
+{
+  memset(s, 0, maxlen);
+
+  switch(sa->sa_family) {
+  case AF_INET:
+	strncpy(s, inet_ntoa((((struct sockaddr_in *)sa)->sin_addr)), maxlen);
+    break;
+  case AF_INET6:
+    strncpy(s, "<ipv6 address - unsupported>", maxlen);
+    break;
+
+  default:
+    strncpy(s, "Unknown AF", maxlen);
+    return NULL;
+  }
+
+  return s;
+}
+#else
 static char *ip2str(const struct sockaddr *sa, char *s, size_t maxlen)
 {
   memset(s, 0, maxlen);
@@ -329,6 +351,7 @@ static char *ip2str(const struct sockaddr *sa, char *s, size_t maxlen)
 
   return s;
 }
+#endif
 
 static void check_dns(const char *service)
 {

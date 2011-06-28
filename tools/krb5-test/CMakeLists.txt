@@ -8,7 +8,7 @@ endif (WIN32 AND MSVC)
 add_executable (krb5-test ${krb5_test_SRCS})
 target_link_libraries (krb5-test k5 ${KRB5_LIBRARIES})
 if (WIN32)
-  target_link_libraries (krb5-test wsock32)
+  target_link_libraries (krb5-test wsock32 ws2_32)
 endif()
 include_directories (${k5_SOURCE_DIR} ${KRB5_INCLUDE_DIRS})
 
