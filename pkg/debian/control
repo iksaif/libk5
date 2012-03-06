@@ -1,0 +1,28 @@
+Source: libk5
+Section: unknown
+Priority: extra
+Maintainer: Corentin Chary <cchary@commonit.com>
+Build-Depends: debhelper (>= 8.0.0), cmake
+Standards-Version: 3.9.2
+Homepage: http://floss.commonit.com/libk5.html
+#Vcs-Git: git://floss.commonit.com/libk5.git
+#Vcs-Browser: http://floss.commonit.com/gitweb/?p=libk5
+
+Package: libk5-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Kerberos 5 tools using lib5
+ Kerberos 5 tools using lib5
+
+Package: libk5-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libkrb5-dev, libk5
+Description: Headers and development libraries for libk5
+ Headers and development libraries for libk5
+
+Package: libk5
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: libk5 runtime libraries - Support library
+ libk5 runtime libraries - Support library
+

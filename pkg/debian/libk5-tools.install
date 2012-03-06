@@ -1,0 +1,5 @@
+usr/bin/kdestroy-k5
+usr/bin/kinit-k5
+usr/bin/klist-k5
+usr/bin/krb5-test
+usr/bin/kvno-k5
