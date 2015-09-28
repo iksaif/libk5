@@ -11,7 +11,7 @@ endif (WIN32 AND MSVC)
 
 set(K5_LIB_MAJOR_VERSION "0")
 set(K5_LIB_MINOR_VERSION "2")
-set(K5_LIB_PATCH_VERSION "0")
+set(K5_LIB_PATCH_VERSION "1")
 
 set(K5_LIB_VERSION_STRING "${K5_LIB_MAJOR_VERSION}.${K5_LIB_MINOR_VERSION}.${K5_LIB_PATCH_VERSION}")
 
@@ -23,6 +23,7 @@ find_package (Krb5 REQUIRED)
 
 add_subdirectory (src)
 add_subdirectory (tools)
+add_subdirectory (doc)
 
 if(WIN32)
 if(EXISTS "${KRB5_KFW_PATH}/bin")
@@ -46,9 +47,9 @@ set(CPACK_VERSION ${K5_LIB_VERSION_STRING})
 set(CPACK_PACKAGE_VERSION ${K5_LIB_VERSION_STRING})
 set(CPACK_PACKAGE_CONTACT "Corentin Chary <corentin.chary@gmail.com>")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/INSTALL")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple kerberos 5 library")
-set(CPACK_PACKAGE_VENDOR "http://floss.commonit.com/k5.html")
+set(CPACK_PACKAGE_VENDOR "https://github.com/iksaif/libk5")
 set(CPACK_SOURCE_IGNORE_FILES
   "~$"
   "^${PROJECT_SOURCE_DIR}/\\\\.git"
@@ -77,8 +78,8 @@ else()
   set(CPACK_BINARY_NSIS "ON")
   set(CPACK_NSIS_MODIFY_PATH "OFF")
   set(CPACK_NSIS_DISPLAY_NAME "K5")
-  set(CPACK_NSIS_HELP_LINK "http://floss.commonit.com/k5.html")
-  set(CPACK_NSIS_URL_INFO_ABOUT "http://floss.commonit.com/k5.html")
+  set(CPACK_NSIS_HELP_LINK "https://github.com/iksaif/libk5")
+  set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/iksaif/libk5")
   set(CPACK_NSIS_CONTACT "Corentin Chary <corentin.chary@gmail.com>")
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "k5")
 endif()

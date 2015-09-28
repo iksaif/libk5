@@ -1,3 +1,10 @@
+libk5 (0.2.1) unstable; urgency=low
+
+  * Add rules for doxygen.
+  * Move to github
+
+ -- Corentin Chary <corentin.chary@gmail.com>  Mon, 28 Sep 2015 12:22:29 +0100
+
 libk5 (0.2.0) unstable; urgency=low
 
   * Initial Release.
